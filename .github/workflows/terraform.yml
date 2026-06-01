@@ -46,7 +46,7 @@ jobs:
       # Terraform Init
       - name: Terraform Init
         id: init
-        run: terraform init
+        run: terraform init --migrate-state
 
       # Terraform Plan (on PR)
       - name: Terraform Plan
