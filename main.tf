@@ -23,6 +23,12 @@ data "aws_subnets" "default" {
 # Get current AWS account ID
 data "aws_caller_identity" "current" {}
 
+locals {
+  default_subnet_ids = data.aws_subnets.default.ids
+  public_subnets = slice(local.default_subnet_ids, 0, min(2, length(local.default_subnet_ids)))
+  private_subnets = slice(local.default_subnet_ids, min(2, length(local.default_subnet_ids)), length(local.default_subnet_ids))
+}
+
 # ============================================
 # Load Balancer Security Group - Shared resource for the load balancer and EC2
 # ============================================
@@ -65,10 +71,10 @@ module "ec2" {
   source = "./modules/ec2"
 
   # Pass data to module
-  vpc_id                = data.aws_vpc.default.id
-  public_subnets       = slice(data.aws_subnets.default.ids, 0, 2)
-  private_subnets      = slice(data.aws_subnets.default.ids, 2, 4)
-  environment          = var.environment
+  vpc_id           = data.aws_vpc.default.id
+  public_subnets   = local.public_subnets
+  private_subnets  = local.private_subnets
+  environment      = var.environment
   instance_type        = var.instance_type
   web_tier_instance_count = var.web_tier_instance_count
   app_tier_instance_count = var.app_tier_instance_count
