@@ -29,6 +29,35 @@ data "aws_subnets" "default" {
 data "aws_caller_identity" "current" {}
 
 # ============================================
+# ALB Security Group - Shared resource between ALB and EC2
+# ============================================
+resource "aws_security_group" "alb_sg" {
+  name        = "alb-sg-${var.environment}"
+  description = "Security group for the application load balancer"
+  vpc_id      = data.aws_vpc.default.id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = var.alb_allowed_cidr_blocks
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name        = "alb-sg-${var.environment}"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+# ============================================
 # EC2 Module - Deploy Web and App Tier Instances
 # ============================================
 # This demonstrates:
@@ -49,8 +78,8 @@ module "ec2" {
   web_tier_instance_count = var.web_tier_instance_count
   app_tier_instance_count = var.app_tier_instance_count
 
-  # Cross-module reference: Get ALB security group from ALB module
-  alb_security_group_id = module.alb.alb_security_group_id
+  # ALB security group is created at the root level to avoid circular module dependencies
+  alb_security_group_id = aws_security_group.alb_sg.id
   allowed_ssh_cidr      = var.allowed_ssh_cidr
 }
 
@@ -68,9 +97,10 @@ module "alb" {
 
   # Pass data to module
   vpc_id              = data.aws_vpc.default.id
-  public_subnets      = slice(data.aws_subnets.default.ids, 0, 2)
-  environment         = var.environment
-  allowed_cidr_blocks = var.alb_allowed_cidr_blocks
+  public_subnets          = slice(data.aws_subnets.default.ids, 0, 2)
+  environment             = var.environment
+  allowed_cidr_blocks     = var.alb_allowed_cidr_blocks
+  alb_security_group_id   = aws_security_group.alb_sg.id
 
   # Cross-module reference: Use EC2 instance IDs from EC2 module
   web_tier_instance_ids = module.ec2.web_tier_instance_ids

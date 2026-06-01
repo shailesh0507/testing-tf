@@ -2,37 +2,12 @@
 # Application Load Balancer Module
 # ============================================
 
-# Security Group for ALB
-resource "aws_security_group" "alb_sg" {
-  name        = "${var.alb_sg_name}-${var.environment}"
-  description = "Security group for ALB"
-  vpc_id      = var.vpc_id
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = var.allowed_cidr_blocks
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "${var.alb_sg_name}-${var.environment}"
-  }
-}
-
 # Application Load Balancer
 resource "aws_lb" "main" {
   name               = "${var.alb_name}-${var.environment}"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.alb_sg.id]
+  security_groups    = [var.alb_security_group_id]
   subnets            = var.public_subnets
 
   tags = {

@@ -28,10 +28,9 @@ variable "alb_name" {
   default     = "app-alb"
 }
 
-variable "alb_sg_name" {
-  description = "ALB security group name"
+variable "alb_security_group_id" {
+  description = "Security group ID for the ALB"
   type        = string
-  default     = "alb-sg"
 }
 
 variable "environment" {
