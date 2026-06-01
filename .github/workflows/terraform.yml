@@ -4,10 +4,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - '*.tf'
-      - '*.tfvars'
-      - 'modules/**'
   pull_request:
     branches:
       - main
@@ -47,29 +43,15 @@ jobs:
           aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
           aws-region: eu-central-1
 
-      # Terraform Format Check
-      - name: Terraform Format
-        id: fmt
-        run: terraform fmt -check -recursive
-        continue-on-error: true
-
       # Terraform Init
       - name: Terraform Init
         id: init
         run: terraform init
-        continue-on-error: true
-
-      # Terraform Validate
-      - name: Terraform Validate
-        id: validate
-        run: terraform validate
-        continue-on-error: true
 
       # Terraform Plan (on PR)
       - name: Terraform Plan
         id: plan
-        run: terraform plan -no-color -out=tfplan
-        continue-on-error: true
+        run: terraform plan
         if: github.event_name == 'pull_request'
         
       # Terraform Apply (on main push)
@@ -77,9 +59,7 @@ jobs:
         id: plan-apply
         run: terraform plan -no-color
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        continue-on-error: true
 
       - name: Terraform Apply
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve -no-color
-        continue-on-error: false
