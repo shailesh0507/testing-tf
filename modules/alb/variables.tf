@@ -12,24 +12,24 @@ variable "public_subnets" {
   type        = list(string)
 }
 
-variable "web_tier_instance_ids" {
-  description = "Web tier instance IDs (cross-module reference)"
+variable "web_instance_ids" {
+  description = "Web instance IDs (cross-module reference)"
   type        = list(string)
 }
 
-variable "app_tier_instance_ids" {
-  description = "App tier instance IDs"
+variable "app_instance_ids" {
+  description = "App instance IDs"
   type        = list(string)
 }
 
-variable "alb_name" {
-  description = "ALB name"
+variable "name" {
+  description = "Load balancer name"
   type        = string
   default     = "app-alb"
 }
 
-variable "alb_security_group_id" {
-  description = "Security group ID for the ALB"
+variable "security_group_id" {
+  description = "Security group ID for the load balancer"
   type        = string
 }
 
@@ -44,8 +44,8 @@ variable "allowed_cidr_blocks" {
   default     = ["0.0.0.0/0"]
 }
 
-variable "web_target_group_name" {
-  description = "Web target group name"
+variable "target_group_name" {
+  description = "Target group name"
   type        = string
   default     = "web-tg"
 }

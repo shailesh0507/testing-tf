@@ -4,20 +4,20 @@
 
 # Application Load Balancer
 resource "aws_lb" "main" {
-  name               = "${var.alb_name}-${var.environment}"
+  name               = "${var.name}-${var.environment}"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [var.alb_security_group_id]
+  security_groups    = [var.security_group_id]
   subnets            = var.public_subnets
 
   tags = {
-    Name = "${var.alb_name}-${var.environment}"
+    Name = "${var.name}-${var.environment}"
   }
 }
 
 # Target Group for Web Tier
 resource "aws_lb_target_group" "web_tg" {
-  name        = "${var.web_target_group_name}-${var.environment}"
+  name        = "${var.target_group_name}-${var.environment}"
   port        = 80
   protocol    = "HTTP"
   vpc_id      = var.vpc_id
@@ -33,7 +33,7 @@ resource "aws_lb_target_group" "web_tg" {
   }
 
   tags = {
-    Name = "${var.web_target_group_name}-${var.environment}"
+    Name = "${var.target_group_name}-${var.environment}"
   }
 }
 
@@ -51,16 +51,16 @@ resource "aws_lb_listener" "http" {
 
 # Register Web Tier Instances with Target Group
 resource "aws_lb_target_group_attachment" "web_targets" {
-  count            = length(var.web_tier_instance_ids)
+  count            = length(var.web_instance_ids)
   target_group_arn = aws_lb_target_group.web_tg.arn
-  target_id        = var.web_tier_instance_ids[count.index]
+  target_id        = var.web_instance_ids[count.index]
   port             = 80
 }
 
 # Register App Tier Instances with Target Group
 resource "aws_lb_target_group_attachment" "app_targets" {
-  count            = length(var.app_tier_instance_ids)
+  count            = length(var.app_instance_ids)
   target_group_arn = aws_lb_target_group.web_tg.arn
-  target_id        = var.app_tier_instance_ids[count.index]
+  target_id        = var.app_instance_ids[count.index]
   port             = 80
 }
