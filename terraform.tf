@@ -13,13 +13,13 @@ terraform {
   }
 
   # Uncomment below for remote state management
-  # backend "s3" {
-  #   bucket         = "your-terraform-state-bucket"
-  #   key            = "terraform.tfstate"
-  #   region         = "us-east-1"
-  #   encrypt        = true
+   backend "s3" {
+     bucket         = "terraform-demo-abhijeet1"
+     key            = "terraform.tfstate"
+     region         = "eu-central-1"
+     encrypt        = true
   #   dynamodb_table = "terraform-locks"
-  # }
+   }
 }
 
 # ============================================
