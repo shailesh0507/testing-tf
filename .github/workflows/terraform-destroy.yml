@@ -33,6 +33,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
           aws-region: eu-central-1
 
+      - name: Select Workspace
+        run: |
+          terraform workspace select default
+
       # Terraform Init
       - name: Terraform Init
         id: init
