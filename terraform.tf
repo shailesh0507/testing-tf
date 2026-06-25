@@ -1,10 +1,9 @@
 # ============================================
+# ============================================
 # Terraform Configuration & Provider Setup
 # ============================================
-
 terraform {
   required_version = ">= 1.0"
-
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -12,23 +11,18 @@ terraform {
     }
   }
 
-  # Uncomment below for remote state management
-   backend "s3" {
-     bucket         = "terraform-demo-abhijeet1"
-     key            = "terraform.tfstate"
-     region         = "eu-central-1"
-     encrypt        = true
-  #   dynamodb_table = "terraform-locks"
-   }
+  backend "s3" {
+    bucket = "terraform-demo-shailesh"
+    key    = "terraform.tfstate"
+    region = "ap-south-1"
+  }
 }
 
 # ============================================
 # AWS Provider Configuration
 # ============================================
-
 provider "aws" {
-  region = var.aws_region
-
+  region = "ap-south-1"
   default_tags {
     tags = {
       Environment = var.environment
